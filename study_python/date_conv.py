@@ -56,15 +56,17 @@ class jsonwrite(fileWriter):
 #out_csv = "/Users/admin/Desktop/git_rep/study_python/formatted_time_update.csv"
 #out_json = "/Users/admin/Desktop/git_rep/study_python/flights_update.json"
 
-def main():
+def parse_arguments():
 
     parser = argparse.ArgumentParser(description="Для відкриття будь яких файлів")
     parser.add_argument("csv_file", help="/Users/admin/Desktop/git_rep/study_python/201507_flightsjs_copy.csv")
     parser.add_argument("out_csv", help="/Users/admin/Desktop/git_rep/study_python/formatted_time_update_final.csv")
     parser.add_argument("out_json", help="/Users/admin/Desktop/git_rep/study_python/flights_update_final.json")
-    args = parser.parse_args()
+    return parser.parse_args()
+    #args = parser.parse_args()
 
-    with open(args.csv_file,mode='r') as file:
+def process_data(input_file):
+    with open(input_file,mode='r') as file:
         reader = csv.reader(file)
         header = next(reader)
 
@@ -84,12 +86,18 @@ def main():
                 row[idx] = converter.convert_time()
 
             final_data.append(row)
+    return header, final_data
+
+def main():
+    args = parse_arguments()
+
+    header, processed_data= process_data(args.csv_file)
 
     csvwriter = csvwrite(args.out_csv)
     jsonwriter = jsonwrite(args.out_json)
 
-    csvwriter.write(header, final_data)
-    jsonwriter.write(header, final_data)
+    csvwriter.write(header, processed_data)
+    jsonwriter.write(header, processed_data)
 
 if __name__ == "__main__":
     main()
