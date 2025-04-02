@@ -13,7 +13,7 @@ class Time:
     def upd_date(self):
         return datetime(self.year, self.month,self.day)
 
-class Converter(Time):                      # успадкування
+class Converter(Time):                      
     def __init__(self, year, month, day, time_str):
         super().__init__(year, month, day)
         self.time_str = time_str
@@ -33,18 +33,10 @@ class Converter(Time):                      # успадкування
 
         return datetime(date.year, date.month, date.day, hours, minutes).isoformat()
 
-<<<<<<< HEAD
 class FileWriter:
     def __init__(self,namefile):
         self.namefile = namefile
 
-=======
-class FileWriter(ABC):
-    def __init__(self,namefile):
-        self.namefile = namefile
-
-    @abstractmethod
->>>>>>> 598113ec491d915c8340c96b6b8a1ae98d292411
     def write(self, header, data):    
         pass
 
@@ -125,16 +117,11 @@ if __name__ == "__main__":
     main()
 
 
-<<<<<<< HEAD
 # python date_conv.py 201507_flightsjs_copy.csv formatted_time_update.csv --format csv
 # python date_conv.py 201507_flightsjs_copy.csv flights_update.json --format json
 
 #test
 # python date_conv.py 201507_flightsjs_copy.csv flights_update.json --format parquet 
-=======
-
-
->>>>>>> 598113ec491d915c8340c96b6b8a1ae98d292411
 
 
 
