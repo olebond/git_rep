@@ -3,6 +3,19 @@ import csv
 import json
 import argparse
 from abc import ABC, abstractmethod
+import time
+import functools
+
+def timer(func):
+    #@functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        execution_time = end_time - start_time
+        print(f"Function {func.__name__} executed in {execution_time:.2f} seconds")
+        return result
+    return wrapper
 
 class Time:
     def __init__(self, year, month, day):
@@ -56,6 +69,7 @@ class JsonWrite(FileWriter):
 #out_csv = "/Users/admin/Desktop/git_rep/study_python/formatted_time_update.csv"
 #out_json = "/Users/admin/Desktop/git_rep/study_python/flights_update.json"
 
+@timer
 def process_data(input_file):
     with open(input_file,mode='r') as file:
         reader = csv.reader(file)
@@ -117,11 +131,11 @@ if __name__ == "__main__":
     main()
 
 
-# python date_conv.py 201507_flightsjs_copy.csv formatted_time_update.csv --format csv
-# python date_conv.py 201507_flightsjs_copy.csv flights_update.json --format json
+# python3 date_conv.py 201507_flights.csv flights_update.csv --format csv
+# python3 date_conv.py 201507_flights.csv flights_update.json --format json
 
 #test
-# python date_conv.py 201507_flightsjs_copy.csv flights_update.json --format parquet 
+# python3 date_conv.py 201507_flights.csv flights_update.json --format parquet 
 
 
 
