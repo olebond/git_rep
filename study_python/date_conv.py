@@ -5,9 +5,10 @@ import argparse
 from abc import ABC, abstractmethod
 import time
 import functools
+import os
 
 def timer(func):
-    #@functools.wraps(func)
+    @functools.wraps(func)
     def wrapper(*args, **kwargs):
         start_time = time.time()
         result = func(*args, **kwargs)
@@ -32,19 +33,15 @@ class Converter(Time):
         self.time_str = time_str
 
     def convert_time(self):
+        if self.time_str == "":
+            return ""
+            
         date = self.upd_date()
-
-        if self.time_str == '':
-            return None
-
         hours = int(self.time_str[:2])
         minutes = int(self.time_str[2:])
-
-        if hours == 24:
-            hours = 0
-            date += timedelta(days=1)
-
-        return datetime(date.year, date.month, date.day, hours, minutes).isoformat()
+        
+        date = date + timedelta(hours=hours, minutes=minutes)
+        return date.isoformat()
 
 class FileWriter:
     def __init__(self,namefile):
@@ -71,17 +68,14 @@ class JsonWrite(FileWriter):
 
 @timer
 def process_data(input_file):
+    if not os.path.exists(input_file):
+        raise FileNotFoundError(f"Wrong directory of input file: {input_file}")
+        
     with open(input_file,mode='r') as file:
         reader = csv.reader(file)
         header = next(reader)
 
-        columns_to_delete = ['YEAR', 'MONTH', 'DAY']
-        idx_to_delete = [header.index(col) for col in columns_to_delete]
-        
-        new_header = []
-        for i in range(len(header)):
-            if i not in idx_to_delete:
-                new_header.append(header[i])
+        new_header = header[3:]
 
         time_columns = ['SCHEDULED_DEPARTURE', 'DEPARTURE_TIME', 'WHEELS_OFF', 'WHEELS_ON', 'SCHEDULED_ARRIVAL',
                     'ARRIVAL_TIME']
@@ -91,14 +85,8 @@ def process_data(input_file):
         final_data = []
 
         for row in reader:
-            year = row[0]
-            month = row[1]
-            day = row[2]
-            
-            new_row = []
-            for i in range(len(row)):
-                if i not in idx_to_delete: 
-                    new_row.append(row[i])
+            year, month, day = row[:3]
+            new_row = row[3:]
             
             for idx in index:
                 converter = Converter(year, month, day, new_row[idx])
@@ -108,14 +96,16 @@ def process_data(input_file):
             
     return new_header, final_data
 
+def main():
+    parser = argparse.ArgumentParser(description="Flight data converter")
+    parser.add_argument("csv_file", help="Path to input CSV file")
+    parser.add_argument("output_file", help="Name of output file")
+    parser.add_argument("--format", required=True)
+    args = parser.parse_args()
 
-if __name__ == "__main__":
-    def main():
-        parser = argparse.ArgumentParser(description="Flight data converter")
-        parser.add_argument("csv_file", help="Path to input CSV file")
-        parser.add_argument("output_file", help="Name of output file")
-        parser.add_argument("--format", required=True)
-        args = parser.parse_args()
+    try:
+        if not args.csv_file.endswith('.csv'):
+            raise ValueError("Input file must be a CSV file")
 
         new_header, processed_data = process_data(args.csv_file)
         
@@ -128,6 +118,14 @@ if __name__ == "__main__":
             writer = JsonWrite(args.output_file)
             writer.write(new_header, processed_data)
 
+    except FileNotFoundError as err:
+        print(f"Error: {str(err)}")
+    except ValueError as err:
+        print(f"Error: {str(err)}")
+    except Exception as err:
+        print(f"Error: {str(err)}")
+ 
+if __name__ == "__main__":
     main()
 
 
