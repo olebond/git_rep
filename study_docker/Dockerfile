@@ -1,9 +1,3 @@
-FROM python:3.11-slim
+FROM postgres:latest
 
-WORKDIR /app
-
-COPY . /app
-
-RUN pip install --upgrade pip
-
-CMD ["python"]
+COPY init.sql /docker-entrypoint-initdb.d/
