@@ -1,0 +1,20 @@
+This is a folder for my study docker}
+
+
+image : docker build -t my-postgres .
+
+run cont: docker run --name my-postgres-container \
+  --env-file .env \
+  -p 5432:5432 \
+  -d my-postgres
+
+check: docker ps 
+
+connect to DB:  psql -h localhost -p 5432 -U myuser -d mydb
+pswd: mysecretpassword
+
+\q exit from db
+
+docker stop my-postgres-container      stop cont
+docker rm my-postgres-container        delete cont 
+docker rmi my-postgres                 delete image 
