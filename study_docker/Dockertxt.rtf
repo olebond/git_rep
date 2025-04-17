@@ -6,6 +6,7 @@ image : docker build -t my-postgres .
 run cont: docker run --name my-postgres-container \
   --env-file .env \
   -p 5432:5432 \
+  -v $(pwd)/postgres_data:/var/lib/postgresql/data \
   -d my-postgres
 
 check: docker ps 
