@@ -19,3 +19,14 @@ pswd: mysecretpassword
 docker stop my-postgres-container      stop cont
 docker rm my-postgres-container        delete cont 
 docker rmi my-postgres                 delete image 
+
+
+
+docker build -t my-postgres .
+docker run --name my-postgres-container --env-file .env -p 5432:5432 -v $(pwd)/postgres_data:/var/lib/postgresql/data -d my-postgres
+## cd .. && docker cp study_python/flights_update.csv my-postgres-container:/tmp/flights_update.csv
+psql -h localhost -p 5432 -U myuser -d mydb
+## COPY flights FROM '/tmp/flights_update.csv' WITH (FORMAT csv, HEADER true);
+
+\copy flights FROM '/Users/admin/Desktop/git_rep/study_python/flights_update.csv' WITH (FORMAT csv, HEADER true);      -    імпорт даних до моєї таблиці.
+
