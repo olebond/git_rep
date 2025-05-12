@@ -1,2 +1,6 @@
 .DS_Store
 .idea/
+study_docker/postgres_data/
+.env
+**/.env
+
