@@ -40,12 +40,14 @@ SELECT
 FROM flights
 WHERE wheels_on IS NOT NULL AND wheels_off IS NOT NULL;
 
+--повернути потім в годинах, хвилинах цілу число
 SELECT
   tail_number,
   EXTRACT(EPOCH FROM wheels_on - wheels_off) / 60 AS minutes_in_air   -- back in sec
 FROM flights
 WHERE wheels_on IS NOT NULL AND wheels_off IS NOT NULL;
 
+--без фільтрів
 SELECT
   tail_number,
   DATE_PART('day', wheels_on - wheels_off) AS days_in_air
@@ -136,82 +138,93 @@ SELECT
 --The SQL Server provides the following Rank Functions that allow assigning different ranks:
 
 --Function that assigns the rank number to each record present in a partition (RANK).
-SELECT state, airline, flights_count
-FROM (
-    SELECT
-        airport_dim.airport_state_name AS state,
-        flights.airline,
-        COUNT(*) AS flights_count,
-        RANK() OVER (
-            PARTITION BY airport_dim.airport_state_name
-            ORDER BY COUNT(*) DESC
-        ) AS rnk
-    FROM flights
-    JOIN airport_dim
-      ON flights.origin_airport = airport_dim.airport
-    WHERE airport_dim.airport_country_name = 'United States'
-      AND airport_dim.airport_is_latest = 1
-    GROUP BY airport_dim.airport_state_name, flights.airline
-) sub
-WHERE rnk <= 5
-ORDER BY state, flights_count DESC;
-
 --Function that assigns the number to each record within a partition without skipping the rank numbers (DENSE_RANK).
-WITH flight_counts AS (
-    SELECT
-        airport_dim.airport_state_name AS state,
-        flights.airline,
-        COUNT(*) AS flights_count
-    FROM flights
-    JOIN airport_dim
-      ON flights.origin_airport = airport_dim.airport
-    WHERE airport_dim.airport_country_name = 'United States'
-      AND airport_dim.airport_is_latest = 1
-    GROUP BY airport_dim.airport_state_name, flights.airline
-)
+--Function that assigns the number to the group or bucket of rows within a partition (NTILE).
+--Function that assigns the sequential number to each unique record present in a partition (ROW_NUMBER).
 SELECT
-    state,
-    airline,
-    flights_count
-FROM (
-    SELECT *,
-           DENSE_RANK() OVER (PARTITION BY state ORDER BY flights_count DESC) AS rnk
-    FROM flight_counts
-) ranked
-WHERE rnk <= 5
+  airport_dim.airport_state_name AS state,
+  flights.airline,
+  COUNT(*) AS flights_count,
+  RANK() OVER (
+    PARTITION BY airport_dim.airport_state_name
+    ORDER BY COUNT(*) DESC
+  ) AS rank_pos,
+  DENSE_RANK() OVER (
+    PARTITION BY airport_dim.airport_state_name
+    ORDER BY COUNT(*) DESC
+  ) AS dense_rank_pos,
+  ROW_NUMBER() OVER (
+    PARTITION BY airport_dim.airport_state_name
+    ORDER BY COUNT(*) DESC
+  ) AS row_num,
+  NTILE(5) OVER (
+    PARTITION BY airport_dim.airport_state_name
+    ORDER BY COUNT(*) DESC
+  ) AS bucket
+FROM flights
+JOIN airport_dim
+  ON flights.origin_airport = airport_dim.airport
+GROUP BY airport_dim.airport_state_name, flights.airline
 ORDER BY state, flights_count DESC;
 
---Function that assigns the number to the group or bucket of rows within a partition (NTILE).
-WITH flight_counts AS (
-    SELECT
-        airport_dim.airport_state_name AS state,
-        flights.airline,
-        COUNT(*) AS flights_count
-    FROM flights
-    JOIN airport_dim
-      ON flights.origin_airport = airport_dim.airport
-    WHERE airport_dim.airport_country_name = 'United States'
-      AND airport_dim.airport_is_latest = 1
-    GROUP BY airport_dim.airport_state_name, flights.airline
-)
+--Combine the results of two or more SELECT statements so that:
+
+--Resulted data set includes the rows returned by both statements (UNION ALL).
+SELECT origin_airport FROM flights
+UNION ALL
+SELECT airport FROM airport_dim;
+--Resulted data set includes the rows returned by both statements without duplicates (UNION).
+SELECT origin_airport FROM flights
+UNION
+SELECT airport FROM airport_dim;
+--Resulted data set includes all the rows common to both queries (INTERSECT).
+SELECT origin_airport FROM flights
+INTERSECT
+SELECT airport FROM airport_dim;
+--Resulted data set includes the difference between the two queries (EXCEPT).
+SELECT origin_airport FROM flights
+EXCEPT
+SELECT airport FROM airport_dim;
+
+--Use the following logical join operators to join tables in queries:
+
+--Inner Join
+SELECT *
+FROM flights
+INNER JOIN airport_dim
+  ON flights.origin_airport = airport_dim.airport;
+--Left Outer Join
+SELECT *
+FROM flights
+LEFT JOIN airport_dim
+  ON flights.origin_airport = airport_dim.airport;
+--Right Outer Join
+SELECT *
+FROM flights
+RIGHT JOIN airport_dim
+  ON flights.origin_airport = airport_dim.airport;
+--Full Outer Join
+SELECT *
+FROM flights
+FULL OUTER JOIN airport_dim
+  ON flights.origin_airport = airport_dim.airport;
+--Cross Join
 SELECT
-    state,
-    airline,
-    flights_count,
-    NTILE(5) OVER (PARTITION BY state ORDER BY flights_count DESC) AS bucket
-FROM flight_counts
-ORDER BY state, bucket, flights_count DESC;
---Function that assigns the sequential number to each unique record present in a partition (ROW_NUMBER).
-SELECT state, airline, flights_count
-FROM (
-    SELECT airport_dim.airport_state_name AS state,
-           flights.airline,
-           COUNT(*) AS flights_count,
-           ROW_NUMBER() OVER (PARTITION BY airport_dim.airport_state_name ORDER BY COUNT(*) DESC) AS rn
-    FROM flights
-    JOIN airport_dim
-      ON flights.origin_airport = airport_dim.airport
-    WHERE airport_dim.airport_country_name = 'United States'
-      AND airport_dim.airport_is_latest = 1
-    GROUP BY airport_dim.airport_state_name, flights.airline
-) sub;
+  flights.flight_number,
+  flights.origin_airport,
+  airport_dim.airport_state_name
+FROM flights
+CROSS JOIN airport_dim
+LIMIT 100;
+
+--inner join + where = cross join
+SELECT
+  f.flight_number,
+  f.origin_airport,
+  a.airport,
+  a.airport_state_name
+FROM flights f
+CROSS JOIN airport_dim a
+WHERE f.origin_airport = a.airport
+  AND a.airport_state_name = 'California'
+LIMIT 20;
