@@ -7,7 +7,7 @@ upd_flights = "/Users/admin/Desktop/git_rep/study_python/formatted_time_upd.csv"
 json_file = 'flights_upd.json'
 
 def format_time(value):
-    if value == '2400' or value = '0000':
+    if value == '2400' or value ='0000':
         pass
     elif value.isdigit() and len(value) == 4:
         return datetime.strptime(value,"%H%M").strftime("%H:%M")

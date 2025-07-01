@@ -1,5 +1,4 @@
 SELECT state, airline, flights_count
-
 FROM (
     SELECT airport_dim.airport_state_name AS state,
            flights.airline,
