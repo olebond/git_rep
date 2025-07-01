@@ -4,3 +4,4 @@ study_docker/postgres_data/
 .env
 **/.env
 
+study_spark/tvs.json
