@@ -48,14 +48,31 @@ filtered = joined.filter(
     (joined["date"] == "2015-01-04")
 )
 
-total_cali_ckn = filtered.agg(F.sum("quantity").alias("total_cali_ckn")).collect()[0]["total_cali_ckn"]
+#total_cali_ckn = filtered.agg(F.sum("quantity").alias("total_cali_ckn")).collect()[0]["total_cali_ckn"]
 
-filtered.agg(F.sum("quantity")).show()
+filtered.agg(F.sum("quantity")).show(truncate=False)
 
 ingredients = joined.filter(
     (joined["date"] == "2015-01-02") &
     (joined["time"] == "18:27:50")
 )
 ingredients.select("ingredients").show(truncate=False)
+
+ingredients_exploded = ingredients.withColumn(
+    "ingredient",
+    F.explode(F.split(F.col("ingredients"), ",\\s*"))
+)
+ingredient_counts = ingredients_exploded.groupBy("ingredient") \
+    .agg(F.sum("quantity").alias("total_quantity")) \
+    .orderBy(F.desc("total_quantity"))
+ingredient_counts.show(truncate=False)
+
+mostsold = joined.filter((F.col("date") >= "2015-01-01") & (F.col("date") <= "2015-01-08"))
+
+most_sold_category = mostsold.groupBy("category") \
+    .agg(F.sum("quantity").alias("total_sold")) \
+    .orderBy(F.desc("total_sold")) \
+
+most_sold_category.show(truncate=False)
 
 spark.stop()
