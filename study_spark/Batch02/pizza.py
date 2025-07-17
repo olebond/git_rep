@@ -1,5 +1,6 @@
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as F
+from pyspark.sql import Window
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType, FloatType
 
 spark = SparkSession.builder \
@@ -60,7 +61,7 @@ ingredients.select("ingredients").show(truncate=False)
 
 ingredients_exploded = ingredients.withColumn(
     "ingredient",
-    F.explode(F.split(F.col("ingredients"), ",\\s*"))
+    F.explode(F.split(F.col("ingredients"), ","))
 )
 ingredient_counts = ingredients_exploded.groupBy("ingredient") \
     .agg(F.sum("quantity").alias("total_quantity")) \
@@ -69,10 +70,18 @@ ingredient_counts.show(truncate=False)
 
 mostsold = joined.filter((F.col("date") >= "2015-01-01") & (F.col("date") <= "2015-01-08"))
 
+sold_rank = mostsold.groupBy("category") \
+    .agg(F.sum("quantity").alias("total_sold"))
+
+w = Window.orderBy(F.desc("total_sold"))
+most_sold_rank = sold_rank.withColumn("rank", F.rank().over(w))
+most_sold_rank.filter(F.col("rank") <= 2).show(truncate=False)
+
 most_sold_category = mostsold.groupBy("category") \
     .agg(F.sum("quantity").alias("total_sold")) \
     .orderBy(F.desc("total_sold")) \
-
+    .limit(1)
+    
 most_sold_category.show(truncate=False)
 
 spark.stop()
