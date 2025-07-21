@@ -1,10 +1,9 @@
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as F
-from pyspark.sql.types import StructType, StructField, StringType, IntegerType, FloatType
 
 spark = SparkSession.builder \
     .appName("English Words") \
-    .master("local[*]") \
+    .master("local[1]") \
     .getOrCreate()
 
 df = spark.read.text("study_spark/words.txt")
@@ -28,7 +27,3 @@ df_uou = df_s.withColumn(
 )
 df_result = df_uou.filter(F.col("word_lower") != F.col("changed_word"))
 df_result.select("changed_word").show(truncate=False)
-
-
-
-
