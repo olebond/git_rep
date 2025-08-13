@@ -6,19 +6,13 @@ import datetime
 import zipfile
 
 ORDERS_CSV = '/Users/admin/Desktop/git_rep/Programming languages/orders.csv'
-orders = []
 
 with open(ORDERS_CSV, newline='', encoding='utf-8') as f:
-    reader = csv.DictReader(f)
-    for row in reader:
-        orders.append(row)
+    orders = list(csv.DictReader(f))
 
 for order in orders:
     hour = order['order_hour_of_day']
-    if re.match(r'^(0[5-9]|10)$', hour):
-        order['morning_order'] = 'yes'
-    else:
-        order['morning_order'] = 'no'
+    order['morning_order'] = 'yes' if re.match(r'^(0[5-9]|10)$', hour) else 'no'
 
 start_date = datetime.date(2000, 1, 1)
 for order in orders:
