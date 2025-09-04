@@ -10,3 +10,4 @@ legacy_snapshots/**/study_docker/postgres_data/
 *.zip
 *.csv
 git_rep_bare/
+inst_git.txt
