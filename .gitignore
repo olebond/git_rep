@@ -9,3 +9,4 @@ legacy_snapshots/**/study_docker/postgres_data/
 *.parquet
 *.zip
 *.csv
+git_rep_bare/
