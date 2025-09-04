@@ -1,0 +1,7 @@
+1. You get a task named: 'create a data script'.
+2. Create a branch: git checkout -b "feature/data-script"
+3. You do your work (to remove file from being tracked: git restore --staged <filename>)
+4. git status / git add .
+5. git commit -m "feat: added my changes"
+6. git push
+7. If you are done with your work you open a PR (pull request)
