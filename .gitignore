@@ -4,3 +4,8 @@ study_docker/postgres_data/
 .env
 **/.env
 
+artifacts/backup_large_files/
+legacy_snapshots/**/study_docker/postgres_data/
+*.parquet
+*.zip
+*.csv

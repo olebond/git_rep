@@ -1,0 +1,26 @@
+у файлі batch05.py треба виконати наступну задачу, 
+
+Handle and log errors, create scripts or use ready solutions for error handling, and alert about errors. Capture run-time information.
+Outcomes
+A program code.
+
+Handle and log errors that may occur during Spark batch processing. Implement error-handling mechanisms, such as exception handling, logging, and alerting, 
+to ensure that errors are captured, and appropriate actions are taken. 
+Write a simple Spark batch processing script that performs a data processing task on a dataset or use an existing one.
+To handle errors:
+1.Print in the terminal all logs at the debug level.
+2.Save all logs at the warning level and above in the log file.
+
+Pre-requirements:
+Java/Scala/Python
+Apache Spark
+Acceptance criteria:
+The error-handling mechanisms are implemented within the script to catch and handle any errors that may occur during execution.
+The error messages or relevant information are logged to a log file or a suitable logging mechanism.
+The run-time information, such as execution time, resource utilization, and data processing statistics, is captured.
+The error-handling mechanism is demonstrated by intentionally introducing a simulated error or exception and verifying that it is properly handled, logged, and alerted.
+
+розділи код будь ласка коментарями по завданнях, 1,2,3,4, коментарі додавай англійською мовою.
+до першого завдання це - помилка(log, debug) що немає файлу, типу неправильний шлях до файлу.хендлить, сповіщає юзера , логує, і спробувати аби в консолі заранилось,
+і додати input тобто дати змогу ввести правильний шлях, щоб далі процес пройшов і дальше не стопався. і залогувати ерору, що типу файла не було за таким то адресом. 
+до другого завдання це записувати логи в окремий файл під назвою handle-error.log в той самий шлях де і буде зберігатись output. стандартний формат, час, северіті(типу info, fatal etc), і меседж, і нехай буде ще тайм-зона.
