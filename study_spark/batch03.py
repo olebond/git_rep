@@ -26,3 +26,5 @@ df_uou = df_s.withColumn(
 )
 df_result = df_uou.filter(F.col("word_lower") != F.col("changed_word"))
 df_result.select("changed_word").show(truncate=False)
+
+#spark-submit --master spark://localhost:7077
