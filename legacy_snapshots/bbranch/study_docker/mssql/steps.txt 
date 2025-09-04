@@ -1,0 +1,39 @@
+Ось повний скрипт запуску контейнера MS SQL Server:
+
+# 1. Зупиняємо і видаляємо старий контейнер, якщо він існує
+docker stop mssql-flights || true && docker rm mssql-flights || true
+
+# 2. Запускаємо новий контейнер з нашими налаштуваннями
+docker run -d --name mssql-flights --env-file study_docker/mssql/mssql.env -p 1433:1433 mcr.microsoft.com/mssql/server:2022-latest
+
+# 3. Чекаємо 10 секунд, поки контейнер повністю запуститься
+sleep 10
+
+# 4. Копіюємо CSV файли в контейнер:
+docker cp study_python/201507_flights.csv mssql-flights:/tmp/201507_flights.csv
+docker cp study_python/flights_update.csv mssql-flights:/tmp/flights_update.csv
+
+# 5. Копіюємо скрипти в контейнер
+docker cp study_docker/mssql/init/init.sql mssql-flights:/init.sql
+docker cp study_docker/mssql/init/insert_data.sql mssql-flights:/insert_data.sql
+
+# 6. Підключаємося до бази даних через Azure Data Studio або DBeaver:
+Сервер: localhost
+Порт: 1433
+База даних: flights_db
+Логін: sa
+Пароль: YourStrong@Passw0rd
+
+# 7. Виконуємо скрипти в такому порядку:
+Спочатку init.sql (створення бази даних і таблиць)
+Потім insert_data.sql (вставка даних з CSV файлів)
+
+
+зупинити контейнер 
+
+docker stop mssql-flights
+
+старт конт 
+
+docker start mssql-flights
+

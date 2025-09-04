@@ -1,0 +1,72 @@
+CREATE DATABASE flights_db;
+GO
+
+USE flights_db;
+GO
+
+CREATE TABLE flights (
+    DAY_OF_WEEK int NOT NULL,
+    AIRLINE varchar(2) NOT NULL,
+    FLIGHT_NUMBER varchar(4) NOT NULL,
+    TAIL_NUMBER varchar(6),
+    ORIGIN_AIRPORT varchar(3) NOT NULL,
+    DESTINATION_AIRPORT varchar(3) NOT NULL,
+    SCHEDULED_DEPARTURE datetime2 NOT NULL,
+    DEPARTURE_TIME datetime2,
+    DEPARTURE_DELAY int,
+    TAXI_OUT int,
+    WHEELS_OFF datetime2,
+    SCHEDULED_TIME int NOT NULL,
+    ELAPSED_TIME int,
+    AIR_TIME int,
+    DISTANCE int NOT NULL,
+    WHEELS_ON datetime2,
+    TAXI_IN int,
+    SCHEDULED_ARRIVAL datetime2 NOT NULL,
+    ARRIVAL_TIME datetime2,
+    ARRIVAL_DELAY int,
+    DIVERTED bit NOT NULL DEFAULT 0,
+    CANCELLED bit NOT NULL DEFAULT 0,
+    CANCELLATION_REASON varchar(2),
+    AIR_SYSTEM_DELAY int,
+    SECURITY_DELAY int,
+    AIRLINE_DELAY int,
+    LATE_AIRCRAFT_DELAY int,
+    WEATHER_DELAY int
+);
+GO
+
+CREATE TABLE flights2 (
+    YEAR int NOT NULL,
+    MONTH int NOT NULL,
+    DAY int NOT NULL,
+    DAY_OF_WEEK int NOT NULL,
+    AIRLINE varchar(2) NOT NULL,
+    FLIGHT_NUMBER varchar(4) NOT NULL,
+    TAIL_NUMBER varchar(6),
+    ORIGIN_AIRPORT varchar(3) NOT NULL,
+    DESTINATION_AIRPORT varchar(3) NOT NULL,
+    SCHEDULED_DEPARTURE int NOT NULL,
+    DEPARTURE_TIME int,
+    DEPARTURE_DELAY int,
+    TAXI_OUT int,
+    WHEELS_OFF int,
+    SCHEDULED_TIME int NOT NULL,
+    ELAPSED_TIME int,
+    AIR_TIME int,
+    DISTANCE int NOT NULL,
+    WHEELS_ON int,
+    TAXI_IN int,
+    SCHEDULED_ARRIVAL int NOT NULL,
+    ARRIVAL_TIME int,
+    ARRIVAL_DELAY int,
+    DIVERTED bit NOT NULL DEFAULT 0,
+    CANCELLED bit NOT NULL DEFAULT 0,
+    CANCELLATION_REASON varchar(2),
+    AIR_SYSTEM_DELAY int,
+    SECURITY_DELAY int,
+    AIRLINE_DELAY int,
+    LATE_AIRCRAFT_DELAY int,
+    WEATHER_DELAY int
+);
+GO
