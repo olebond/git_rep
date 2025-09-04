@@ -19,7 +19,7 @@ spark = SparkSession.builder \
     .config("spark.jars", MSSQL_JAR) \
     .getOrCreate()
 
-log_formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+log_formatter = logging.Formatter('%(asctime)s %(name)s %(levelname)s %(message)s')
 logger = logging.getLogger('spark_batch')
 logger.setLevel(logging.DEBUG)
 
@@ -65,10 +65,10 @@ while True:
         df = spark.read.schema(schema).option("multiline", "true").json(json_path)
         logger.debug(f"Successfully read file: {json_path}")
         break
-    except Exception as e:
-        logger.debug(f"File not found or error reading file at path: {json_path}. Error: {e}")
-        logger.warning(f"File not found at path: {json_path}")
-        print(f"File not found at path: {json_path}. Please enter the correct path to the JSON file:")
+    except FileNotFoundError as e:
+        error_msg = f"File not found at path: {json_path}. Error: {e}"
+        logger.warning(error_msg)
+        print(f"{error_msg}. Please enter the correct path to the JSON file:")
         json_path = input("Enter path to JSON file: ")
 
 #df = df.withColumn("first_air_date", F.when(F.col("first_air_date") == "", None).otherwise(F.col("first_air_date")))
@@ -82,13 +82,13 @@ df.persist()
 try:
     describe_df = df.describe()
     describe_str = describe_df.toPandas().to_string()
-    logger.warning(f"DataFrame describe:\n{describe_str}")
+    logger.debug(f"DataFrame describe:\n{describe_str}")
 except Exception as e:
     logger.warning(f"Could not describe DataFrame: {e}")
 
 try:
     schema_info = "\n".join([f"{field.name}: {field.dataType}" for field in df.schema.fields])
-    logger.warning(f"DataFrame schema:\n{schema_info}")
+    logger.debug(f"DataFrame schema:\n{schema_info}")
 except Exception as e:
     logger.warning(f"Could not log DataFrame schema: {e}")
 
@@ -120,15 +120,14 @@ try:
         .save()
 
 except Exception as e:
-    logger.fatal(f"Fatal error during Spark batch processing: {e}")
-    print(f"Fatal error occurred: {e}")
+    logger.critical(f"Fatal error during Spark batch processing: {e}")
 finally:
     end_time = datetime.now()
     timer = (end_time - start_time).total_seconds()
     logger.info(f"Batch processing finished. Elapsed time: {timer} seconds.")
     try:
         logger.info(f"Total records processed: {df.count()}")
-    except Exception:
-        logger.warning("Could not count records in DataFrame.")
+    except Exception as e:
+        logger.warning(f"Could not count records in DataFrame: {e}")
     df.unpersist()
     spark.stop() 

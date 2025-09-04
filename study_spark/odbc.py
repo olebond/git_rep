@@ -1,8 +1,6 @@
-import pyodbc
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as F
-import pandas as pd
-from pyspark.sql.functions import explode, col, concat_ws
+from pyspark.sql.functions import col, concat_ws
 
 spark = SparkSession.builder.appName("TVShows_ODBC").getOrCreate()
 

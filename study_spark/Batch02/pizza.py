@@ -53,11 +53,15 @@ filtered = joined.filter(
 
 filtered.agg(F.sum("quantity")).show(truncate=False)
 
+filtered.agg(F.sum("quantity").alias("total_cali_ckn")).write.mode("overwrite").parquet("output/cali_ckn.parquet")
+
 ingredients = joined.filter(
     (joined["date"] == "2015-01-02") &
     (joined["time"] == "18:27:50")
 )
 ingredients.select("ingredients").show(truncate=False)
+
+ingredients.select("ingredients").write.mode("overwrite").parquet("output/ingredients.parquet")
 
 ingredients_exploded = ingredients.withColumn(
     "ingredient",
@@ -75,7 +79,7 @@ sold_rank = mostsold.groupBy("category") \
 
 w = Window.orderBy(F.desc("total_sold"))
 most_sold_rank = sold_rank.withColumn("rank", F.rank().over(w))
-most_sold_rank.filter(F.col("rank") <= 2).show(truncate=False)
+most_sold_rank.filter(F.col("rank") <= 4).show(truncate=False)
 
 most_sold_category = mostsold.groupBy("category") \
     .agg(F.sum("quantity").alias("total_sold")) \
@@ -83,5 +87,7 @@ most_sold_category = mostsold.groupBy("category") \
     .limit(1)
     
 most_sold_category.show(truncate=False)
+
+most_sold_category.write.mode("overwrite").parquet("output/most_sold_category.parquet")
 
 spark.stop()

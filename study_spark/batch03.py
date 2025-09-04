@@ -3,7 +3,6 @@ import pyspark.sql.functions as F
 
 spark = SparkSession.builder \
     .appName("English Words") \
-    .master("local[1]") \
     .getOrCreate()
 
 df = spark.read.text("study_spark/words.txt")
