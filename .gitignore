@@ -11,3 +11,6 @@ legacy_snapshots/**/study_docker/postgres_data/
 *.csv
 git_rep_bare/
 inst_git.txt
+archive/
+spark_local/logs/
+spark_local/work/
