@@ -1,10 +1,17 @@
 import unittest
-from spark_app import (
+import os
+import sys
+
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+PARENT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, ".."))
+if PARENT_DIR not in sys.path:
+    sys.path.insert(0, PARENT_DIR)
+
+from utils import (
     create_spark_session,
     get_column_count,
     check_amount_received_is_float,
-    check_timestamp_format,
-    check_payment_format_valid,
+    check_timestamp_column,
     load_data,
     has_payment_format,
 )
@@ -54,21 +61,21 @@ class TestAmountReceivedType(BaseSparkTest):
 class TestTimestampFormat(BaseSparkTest):
     def test_valid_timestamp_format(self):
         df = load_data(self.spark, VALID_CSV_LOCAL_PATH)
-        self.assertTrue(check_timestamp_format(df))
+        self.assertTrue(check_timestamp_column(df))
 
     def test_invalid_timestamp_format(self):
         df = load_data(self.spark, INVALID_CSV_LOCAL_PATH)
-        self.assertFalse(check_timestamp_format(df))
+        self.assertFalse(check_timestamp_column(df))
 
     def test_empty_timestamp_format(self):
         df = load_data(self.spark, EMPTY_CSV_PATH)
-        self.assertFalse(check_timestamp_format(df))
+        self.assertFalse(check_timestamp_column(df))
 
 
 class TestPaymentFormat(BaseSparkTest):
     def test_valid_payment_format(self):
         df = load_data(self.spark, VALID_CSV_LOCAL_PATH)
-        self.assertTrue(has_payment_format(df, "Cheque"))
+        self.assertTrue(has_payment_format(df, "Reinvestment"))
 
     def test_invalid_payment_format(self):
         df = load_data(self.spark, INVALID_CSV_LOCAL_PATH)
@@ -81,3 +88,9 @@ class TestPaymentFormat(BaseSparkTest):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
+
+
+
+
+    
