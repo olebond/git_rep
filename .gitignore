@@ -9,6 +9,7 @@ legacy_snapshots/**/study_docker/postgres_data/
 *.parquet
 *.zip
 *.csv
+!test/fixtures/*.csv
 git_rep_bare/
 inst_git.txt
 archive/
