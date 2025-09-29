@@ -1,7 +1,3 @@
-from pyspark.sql import SparkSession             
-from pyspark.sql.functions import col
-
-
 def create_spark_session(app_name="SparkUnitTestApp"):
     return (
         SparkSession.builder \
@@ -13,7 +9,13 @@ def create_spark_session(app_name="SparkUnitTestApp"):
     )
 
 def load_data(spark, path):
-    return spark.read.csv(path, header=True, inferSchema=True)
+    return (
+        spark.read
+        .option("header", True)
+        .option("inferSchema", True)
+        .option("timestampFormat", "yyyy/MM/dd HH:mm")
+        .csv(path)
+    )
 
 def get_column_count(df, expected_count: int):
     if df is None:
@@ -56,13 +58,4 @@ def has_payment_format(df, payment_type):
         return False
 
 
-if __name__ == "__main__":
-    spark = create_spark_session()
-    df_header_check = load_data(spark, "HI-Large_Trans.csv").limit(1)
-    header_status = get_column_count(df_header_check, 11)
-
-    df_full = load_data(spark, "HI-Large_Trans.csv")
-    df = df_full.select("Amount Received", "Timestamp", "Payment Format").cache()
-    check_amount_received_is_float(df)
-    check_timestamp_column(df)
-    has_payment_format(df, "Reinvestment")
+ 
