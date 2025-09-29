@@ -15,3 +15,10 @@ inst_git.txt
 archive/
 spark_local/logs/
 spark_local/work/
+# General
+**/__pycache__/
+*.pyc
+
+# Airflow
+airflow/logs/
+airflow/dags/__pycache__/
